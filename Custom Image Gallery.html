@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3000 Building Grid Map</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #2d5016 0%, #3a6b1f 50%, #2d5016 100%);
+            font-family: Arial, sans-serif;
+            overflow-x: auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .map-container {
+            display: inline-block;
+            background: repeating-linear-gradient(
+                0deg,
+                #4a7c2a 0px,
+                #4a7c2a 60px,
+                #3d6923 60px,
+                #3d6923 120px
+            ),
+            repeating-linear-gradient(
+                90deg,
+                #4a7c2a 0px,
+                #4a7c2a 60px,
+                #3d6923 60px,
+                #3d6923 120px
+            );
+            background-blend-mode: multiply;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(50, 60px);
+            gap: 0;
+        }
+        
+        .cell {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: radial-gradient(circle at 30% 30%, #5a9c35, #4a7c2a);
+            border: 1px solid rgba(255,255,255,0.1);
+            box-sizing: border-box;
+        }
+        
+        .cell::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                repeating-linear-gradient(
+                    45deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0,0,0,0.03) 2px,
+                    rgba(0,0,0,0.03) 4px
+                );
+            pointer-events: none;
+        }
+        
+        .building-label {
+            font-size: 9px;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            margin-bottom: 2px;
+            white-space: nowrap;
+            z-index: 1;
+        }
+        
+        .building-icon {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            z-index: 1;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        
+        .building-icon:hover {
+            transform: scale(4);
+            z-index: 1000;
+            filter: drop-shadow(0 0 10px rgba(0,0,0,0.8));
+        }
+        
+        .placeholder-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.2);
+            border: 2px dashed rgba(255,255,255,0.4);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: rgba(255,255,255,0.6);
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">Custom image gallery-100 images to 10,000 images! Fees associated are between 0.50-$1.00 each image. Offer the service yourself and get paid by gaining a license agreement! Available for $500/year only! Contact Titan Business Pros LLC at 405-998-7979 for a quote on your custom gallery! </div>
+    <div class="map-container">
+        <div class="grid" id="grid"></div>
+    </div>
+
+    <script>
+        // Building configuration - Edit the imageUrl for each building
+        const buildings = [];
+        
+        // Initialize all 3000 buildings with empty image URLs
+        for (let i = 1; i <= 10000; i++) {
+            buildings.push({
+                id: i,
+                label: `Image ${i}`,
+                imageUrl: '' // Add your image URL here for each building
+            });
+        }
+        
+         // Set images for specific buildings:
+         buildings[0].label = 'TBP LOGO'; 
+         buildings[0].imageUrl ='https://github.com/TitanBusinessPros/TBP-Images/raw/main/Titan%20Logo-5.png';
+          buildings[1].imageUrl ='https://github.com/TitanBusinessPros/TBP-Images/raw/main/Titan%20Logo-5.png';
+           buildings[2].imageUrl ='https://github.com/TitanBusinessPros/TBP-Images/raw/main/Titan%20Logo-5.png';
+            buildings[3].imageUrl ='https://github.com/TitanBusinessPros/TBP-Images/raw/main/Titan%20Logo-5.png';
+             buildings[4].imageUrl ='https://github.com/TitanBusinessPros/TBP-Images/raw/main/Titan%20Logo-5.png';
+              buildings[5].imageUrl ='https://github.com/TitanBusinessPros/TBP-Images/raw/main/Titan%20Logo-5.png';
+               buildings[6].imageUrl ='https://github.com/TitanBusinessPros/TBP-Images/raw/main/Titan%20Logo-5.png';
+        // buildings[1].imageUrl = 'https://example.com/building2-icon.png';
+        // buildings[2].imageUrl = 'https://example.com/building3-icon.png';
+        
+        // Render the grid
+        const grid = document.getElementById('grid');
+        
+        buildings.forEach(building => {
+            const cell = document.createElement('div');
+            cell.className = 'cell';
+            
+            const label = document.createElement('div');
+            label.className = 'building-label';
+            label.textContent = building.label;
+            
+            if (building.imageUrl) {
+                const icon = document.createElement('img');
+                icon.className = 'building-icon';
+                icon.src = building.imageUrl;
+                icon.alt = building.label;
+                icon.onerror = function() {
+                    this.style.display = 'none';
+                    const placeholder = document.createElement('div');
+                    placeholder.className = 'placeholder-icon';
+                    placeholder.textContent = '🏢';
+                    cell.appendChild(placeholder);
+                };
+                cell.appendChild(label);
+                cell.appendChild(icon);
+            } else {
+                const placeholder = document.createElement('div');
+                placeholder.className = 'placeholder-icon';
+                placeholder.textContent = '🏢';
+                cell.appendChild(label);
+                cell.appendChild(placeholder);
+            }
+            
+            grid.appendChild(cell);
+        });
+    </script>
+</body>
+</html>
